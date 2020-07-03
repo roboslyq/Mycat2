@@ -65,6 +65,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * Mycat启动类
  * @author cjw
  **/
 public enum MycatCore {
@@ -309,6 +310,11 @@ public enum MycatCore {
         }
     }
 
+    /**
+     * 启动类
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         ConfigProvider bootConfig = RootHelper.INSTANCE.bootConfig(MycatCore.class);
         MycatCore.INSTANCE.init(bootConfig);
