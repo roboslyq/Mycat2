@@ -331,7 +331,11 @@ public class MySQLSessionManager implements
         MycatReactorThread thread = (MycatReactorThread) Thread.currentThread();
 
         idleDatasourcehMap.forEach((name, v) -> {
-            MySQLClientSession session = Optional.ofNullable(idleDatasourcehMap.get(name)).map(i -> i.getFirst()).orElse(null);
+            // updated by luoyq on 20200705 ,处理LinkedList<MySQLClientSession>不为空，但长度为0的情况。
+            MySQLClientSession session = Optional.ofNullable(idleDatasourcehMap.get(name)).map(
+                    i -> {if(i.size()==0) return null;
+                        else return i.getFirst();
+                    }).orElse(null);
             if (session == null) {
                 return;
             }
@@ -366,7 +370,7 @@ public class MySQLSessionManager implements
     }
 
     private void closeByMany(MySQLDatasource mySQLDatasource, int closeCount) {
-        LinkedList<MySQLClientSession> group = this.idleDatasourcehMap.get(mySQLDatasource);
+        LinkedList<MySQLClientSession> group = this.idleDatasourcehMap.get(mySQLDatasource.getName());
         for (int i = 0; i < closeCount; i++) {
             MySQLClientSession mySQLClientSession = group.removeFirst();
             if (mySQLClientSession != null) {

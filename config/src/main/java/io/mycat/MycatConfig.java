@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Mycat的核心配置，对应mycat.yml配置
+ */
 @Data
 @EqualsAndHashCode
 public class MycatConfig {
