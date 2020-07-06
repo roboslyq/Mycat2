@@ -324,8 +324,11 @@ public abstract class FrontendConnection extends AbstractConnection {
 			writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR, "load data infile end is not  unsupported!");
 		}
 	}
-	
-	
+
+    /**
+     * 执行SQL
+     * @param sql
+     */
 	public void query(String sql) {
 		
 		if (sql == null || sql.length() == 0) {
@@ -379,7 +382,11 @@ public abstract class FrontendConnection extends AbstractConnection {
 			writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR, "Query unsupported!");
 		}		
 	}
-	
+
+	/**
+	 * 执行语句
+	 * @param data
+	 */
 	public void query(byte[] data) {
 		
 		// 取得语句
@@ -392,7 +399,7 @@ public abstract class FrontendConnection extends AbstractConnection {
 			writeErrMessage(ErrorCode.ER_UNKNOWN_CHARACTER_SET, "Unknown charset '" + charset + "'");
 			return;
 		}		
-		
+		// 执行SQL
 		this.query( sql );
 	}
 

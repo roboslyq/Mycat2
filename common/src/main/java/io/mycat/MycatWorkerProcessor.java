@@ -15,7 +15,7 @@ public enum MycatWorkerProcessor {
     private final static Logger LOGGER = LoggerFactory.getLogger(MycatWorkerProcessor.class);
 
     /**
-     * 不支持热更新
+     * 构造运行时线程池：不支持热更新
      *
      * @param workerConfig
      */

@@ -71,6 +71,12 @@ public final class NIOAcceptor extends ProxyReactorThread<Session> {
         }
     }
 
+    /**
+     * ====>启动服务
+     * @param ip
+     * @param port
+     * @throws IOException
+     */
     public void startServerChannel(String ip, int port) throws IOException {
         if (!this.isAlive()) {
             this.start();
@@ -117,7 +123,7 @@ public final class NIOAcceptor extends ProxyReactorThread<Session> {
     }
 
     /**
-     * 仅后台维护的主动创建的连接使用
+     * 仅后台维护的主动创建的连接使用: 默认端口是8066，IP是0.0.0.0
      */
     private void openServerChannel(Selector selector, String bindIp, int bindPort)
             throws IOException {

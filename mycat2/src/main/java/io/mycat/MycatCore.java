@@ -79,38 +79,47 @@ public enum MycatCore {
     private ReactorThreadManager reactorManager;
     @Getter
     private ReactorThreadManager managerManager;
+
     @SneakyThrows
     public void init(ConfigProvider config) {
         this.config = config;
-
+        // 获取配置文件
         MycatConfig mycatConfig = config.currentConfig();
-
+        // 加载插件
         PlugRuntime.INSTANCE.load(mycatConfig);
+        // 构造运行时线程池
         MycatWorkerProcessor.INSTANCE.init(mycatConfig.getServer().getWorkerPool(),mycatConfig.getServer().getTimeWorkerPool());
+        // 集群配置相关初始化
         ReplicaSelectorRuntime.INSTANCE.load(mycatConfig);
+        // JDBC相关工作线程池
         JdbcRuntime.INSTANCE.load(mycatConfig);
         BoosterRuntime.INSTANCE.load(mycatConfig);
+        // 指令运行时拦截器
         InterceptorRuntime.INSTANCE.load(mycatConfig);
-
-
+        // 元数据管理
         MetadataManager.INSTANCE.load(mycatConfig);
-
+        // 字符编码设置
         CharsetUtil.init(null);
         //context.scanner("io.mycat.sqlHandler").inject();
+        // ========>启动Mycat服务器(即代理服务器 ip:port   0.0.0.0:8066)
         startProxy(mycatConfig);
+        // 启动Mycat的管理端(即管理服务器 ip:port   0.0.0.0:9066)
         startManager(mycatConfig);
-
-
         //插件
         runExtra(mycatConfig);
     }
 
-
+    /**
+     * 默认Mananger的端口是9066 ，IP是127.0.0.1
+     * @param config
+     * @throws IOException
+     */
     private void startManager(MycatConfig config) throws IOException {
         ManagerConfig manager = config.getManager();
         if (manager == null) {
             return;
         }
+        // ====> 默认没有User，所以直接结束。
         List<UserConfig> users = manager.getUsers();
         if (users == null || users.isEmpty()) {
             return;
@@ -138,6 +147,17 @@ public enum MycatCore {
         acceptor.startServerChannel(manager.getIp(), manager.getPort());
     }
 
+    /**
+     * 启动代理服务器
+     * @param mycatConfig
+     * @throws ClassNotFoundException
+     * @throws NoSuchMethodException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws java.lang.reflect.InvocationTargetException
+     * @throws IOException
+     * @throws InterruptedException
+     */
     private void startProxy(MycatConfig mycatConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException, IOException, InterruptedException {
         ServerConfig serverConfig = mycatConfig.getServer();
 
@@ -149,6 +169,7 @@ public enum MycatCore {
 
         int reactorNumber = serverConfig.getReactorNumber();
         List<MycatReactorThread> list = new ArrayList<>(reactorNumber);
+        // 根据reactorNumber创建对应的线程
         for (int i = 0; i < reactorNumber; i++) {
             BufferPool bufferPool = (BufferPool) bufferPoolConstructor.newInstance();
             bufferPool.init(mycatConfig.getServer().getBufferPool().getArgs());
@@ -162,13 +183,17 @@ public enum MycatCore {
                 }
             };
             Map<String, UserConfig> userConfigMap = mycatConfig.getInterceptors().stream().map(u -> u.getUser()).collect((Collectors.toMap(k -> k.getUsername(), v -> v)));
+            // 创建Mycat响应编程线程
             MycatReactorThread thread = new MycatReactorThread(new ProxyBufferPoolMonitor(bufferPool), new MycatSessionManager(function, new AuthenticatorImpl(userConfigMap)));
+            // 启动线程
             thread.start();
             list.add(thread);
         }
-
+        // Reactor线程管理器，因此构造函数的参数为Reactor线程集合
         this.reactorManager = new ReactorThreadManager(list);
+        // 启动空闲连接检查
         idleConnectCheck(mycatConfig, reactorManager);
+        // 启动心跳连接检查
         heartbeat(mycatConfig, reactorManager);
 
         TimerConfig timer = mycatConfig.getCluster().getTimer();
@@ -191,7 +216,9 @@ public enum MycatCore {
 
         long wait = TimeUnit.valueOf(timer.getTimeUnit()).toMillis(timer.getInitialDelay()) + TimeUnit.SECONDS.toMillis(1);
         Thread.sleep(wait);
+        // 启动Server相关
         acceptor.startServerChannel(serverConfig.getIp(), serverConfig.getPort());
+        // 启动Session检查(定时任务检查)
         initFrontSessionChecker(mycatConfig, reactorManager);
 
         LOGGER.info("mycat starts successful");
@@ -227,6 +254,11 @@ public enum MycatCore {
         }
     }
 
+    /**
+     * 检查空闲连接任务
+     * @param mycatConfig
+     * @param reactorManager
+     */
     private void idleConnectCheck(MycatConfig mycatConfig, ReactorThreadManager reactorManager) {
         TimerConfig timer = mycatConfig.getDatasource().getTimer();
         ScheduleUtil.getTimer().scheduleAtFixedRate(() -> {
@@ -316,7 +348,9 @@ public enum MycatCore {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        // 初始化配置(配置初始化)
         ConfigProvider bootConfig = RootHelper.INSTANCE.bootConfig(MycatCore.class);
+        // 根据配置启动相关模块
         MycatCore.INSTANCE.init(bootConfig);
     }
 

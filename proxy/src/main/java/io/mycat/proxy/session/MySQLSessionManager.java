@@ -331,7 +331,8 @@ public class MySQLSessionManager implements
         MycatReactorThread thread = (MycatReactorThread) Thread.currentThread();
 
         idleDatasourcehMap.forEach((name, v) -> {
-            MySQLClientSession session = Optional.ofNullable(idleDatasourcehMap.get(name)).map(i -> i.getFirst()).orElse(null);
+            // roboslyq: 此处原版代码异常
+            MySQLClientSession session = Optional.ofNullable(idleDatasourcehMap.get(name)).map(i ->i.size()==0?null:i.getFirst()).orElse(null);
             if (session == null) {
                 return;
             }

@@ -29,6 +29,7 @@ import io.mycat.net.BackendAIOConnection;
 import io.mycat.net.FrontendConnection;
 
 /**
+ * MySQL的请求数据包对应的请求类型
  * @author mycat
  */
 public abstract class MySQLPacket {
@@ -48,7 +49,7 @@ public abstract class MySQLPacket {
     public static final byte COM_INIT_DB = 2;
 
     /**
-     * mysql_real_query
+     * mysql_real_query: INSERT/SELECT/UPDATE/DELETE 等 SQL 归属于 MySQLPacket.COM_QUERY
      */
     public static final byte COM_QUERY = 3;
 

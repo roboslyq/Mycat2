@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 前端命令处理器
+ * =====>前端命令处理器:请求入口
  *
  * @author mycat
  */

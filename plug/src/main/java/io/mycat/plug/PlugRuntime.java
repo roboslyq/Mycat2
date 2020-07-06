@@ -39,7 +39,7 @@ public enum PlugRuntime {
             this.manager = loadBalanceManager;
 
 
-            /////////////////////////////////////////SequenceGenerator////////////////////////////////////////////////////////
+            /////////////////////////////////////////SequenceGenerator（雪花算法生成ID）////////////////////////////////////////////////////////
             SequenceGenerator.INSTANCE.register("snowflake", new SequenceSnowflakeGenerator("workerId:1"));
             for (PlugRootConfig.SequenceConfig sequence : Optional.ofNullable(plugRootConfig).map(i -> i.getSequence()).map(i -> i.getSequences()).orElse(Collections.emptyList())) {
                 String name = sequence.getName();
@@ -55,7 +55,7 @@ public enum PlugRuntime {
                 SequenceGenerator.INSTANCE.register(name, (Supplier) o);
             }
 
-            /////////////////////////////////////////hint////////////////////////////////////////////////////////
+            /////////////////////////////////////////hint(提示)////////////////////////////////////////////////////////
             for (PlugRootConfig.HintConfig hintConfig : Optional.ofNullable(plugRootConfig).map(i -> i.getHint()).map(i -> i.getHints()).orElse(Collections.emptyList())) {
                 String name = hintConfig.getName();
                 String clazz = hintConfig.getClazz();

@@ -158,11 +158,16 @@ public abstract class ProxyReactorThread<T extends Session> extends ReactorEnvTh
         session.getCurNIOHandler().onSocketWrite(session);
     }
 
+    /**
+     * 循环监听
+     */
     public void run() {
         while (!this.isInterrupted()) {
             try {
+                // 队列中的任务
                 pendingJobsEmpty = pendingJobs.isEmpty();
                 long startTime = System.nanoTime();
+                // 如果为空，则监听epoll,阻塞，阻塞时间通过超时时间处理。与redis的ae event事件类似
                 if (pendingJobsEmpty) {
                     ///////////////epoll///////////////////
                     int numOfKeys = selector.select(SELECTOR_TIMEOUT);
@@ -170,22 +175,27 @@ public abstract class ProxyReactorThread<T extends Session> extends ReactorEnvTh
                     if (numOfKeys == 0) {
                         long dis = System.nanoTime() - startTime;
                         if (dis < (SELECTOR_TIMEOUT / 2)) {
+                            // 记录空转次数，防止cpu 100%空轮询
                             invalidSelectCount++;
                         }
                     }
                     ////////epoll///////////
                 } else {
+                    // 如果有任务，马上select一次，不会阻塞
                     selector.selectNow();
                 }
                 updateLastActiveTime();
+                // 获取所有Keys
                 final Set<SelectionKey> keys = selector.selectedKeys();
                 if (keys.isEmpty()) {
                     if (!pendingJobsEmpty) {
                         ioTimes = 0;
+                        // 处理队列中的任务
                         this.processNIOJob();
                     }
                     continue;
                 } else if ((ioTimes > 5) & !pendingJobsEmpty) {
+                    // io超过5次，并且pending队列不为空，也需要处理
                     ioTimes = 0;
                     this.processNIOJob();
                 }

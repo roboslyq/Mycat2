@@ -1,0 +1,1 @@
+http://hutaow.com/blog/2013/11/06/mysql-protocol-analysis/#42-

@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerConfig {
     private String ip = "127.0.0.1";
     private int port = 8066;
+    // 当前服务器CPU核心数，即对应Ｍycat线程数
     private int reactorNumber = Runtime.getRuntime().availableProcessors();
     private String handlerName;
     private ThreadPoolExecutorConfig bindTransactionPool =  ThreadPoolExecutorConfig

@@ -20,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- *
+ * 管理Reactor线程
  * @author jamie12221 date 2019-05-10 13:21
  **/
 public class ReactorThreadManager {
