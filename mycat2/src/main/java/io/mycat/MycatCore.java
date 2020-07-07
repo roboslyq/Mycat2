@@ -101,9 +101,9 @@ public enum MycatCore {
         // 字符编码设置
         CharsetUtil.init(null);
         //context.scanner("io.mycat.sqlHandler").inject();
-        // ========>启动Mycat服务器(即代理服务器 ip:port   0.0.0.0:8066)
+        // ========> 启动Mycat服务器(即代理服务器 ip:port   0.0.0.0:8066)
         startProxy(mycatConfig);
-        // 启动Mycat的管理端(即管理服务器 ip:port   0.0.0.0:9066)
+        // ========> 启动Mycat的管理端(即管理服务器 ip:port   0.0.0.0:9066)
         startManager(mycatConfig);
         //插件
         runExtra(mycatConfig);
@@ -127,6 +127,7 @@ public enum MycatCore {
         List<MycatReactorThread> list = new ArrayList<>(1);
         BufferPool bufferPool = new HeapBufferPool();
         bufferPool.init(Collections.emptyMap());
+        // 设置对应的指令处理器
         Function<MycatSession, CommandDispatcher> function = session -> {
             try {
                 CommandDispatcher commandDispatcher = new ManagerCommandDispatcher();
@@ -160,8 +161,9 @@ public enum MycatCore {
      */
     private void startProxy(MycatConfig mycatConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException, IOException, InterruptedException {
         ServerConfig serverConfig = mycatConfig.getServer();
-
+        // 默认值：public io.mycat.buffer.HeapBufferPool()
         String bufferPoolText = Optional.ofNullable(mycatConfig.getServer()).map(i -> i.getBufferPool()).map(i -> i.getPoolName()).orElse(HeapBufferPool.class.getName());
+        // 默认值：io.mycat.DefaultCommandHandler
         String handlerConstructorText = Optional.ofNullable(mycatConfig.getServer()).map(i -> i.getHandlerName()).orElse(DefaultCommandHandler.class.getName());
 
         Constructor<?> bufferPoolConstructor = getConstructor(bufferPoolText);
@@ -175,6 +177,7 @@ public enum MycatCore {
             bufferPool.init(mycatConfig.getServer().getBufferPool().getArgs());
             Function<MycatSession, CommandDispatcher> function = session -> {
                 try {
+                    // 设置对应的指令处理器
                     CommandDispatcher commandDispatcher = (CommandDispatcher) handlerConstructor.newInstance();
                     commandDispatcher.initRuntime(session);
                     return commandDispatcher;

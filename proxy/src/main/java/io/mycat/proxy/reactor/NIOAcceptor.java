@@ -44,6 +44,11 @@ public final class NIOAcceptor extends ProxyReactorThread<Session> {
         this.mycatReactorThreads = getMycatReactorThreads;
     }
 
+    /**
+     * 处理连接请求
+     * @param curKey
+     * @throws IOException
+     */
     protected void processAcceptKey(SelectionKey curKey) throws IOException {
         ServerSocketChannel serverSocket = (ServerSocketChannel) curKey.channel();
         // 接收通道，设置为非阻塞模式

@@ -89,8 +89,8 @@ public abstract class ProxyReactorThread<T extends Session> extends ReactorEnvTh
             @Override
             public void run(ReactorEnvThread reactor) {
                 try {
-                    frontManager
-                            .acceptNewSocketChannel(keyAttachement, bufPool,
+                    // 完成事件注册
+                    frontManager.acceptNewSocketChannel(keyAttachement, bufPool,
                                     selector, socketChannel);
                 } catch (Exception e) {
                     LOGGER.warn("Register new connection error", e);
@@ -148,6 +148,7 @@ public abstract class ProxyReactorThread<T extends Session> extends ReactorEnvTh
     protected void processReadKey(SelectionKey curKey) throws IOException {
         T session = (T) curKey.attachment();
         setCurSession(session);
+        // 默认是MycatHandler： MySQLClientAuthHandler/MyCatHandler/NIOHandler
         session.getCurNIOHandler().onSocketRead(session);
     }
 
@@ -159,7 +160,8 @@ public abstract class ProxyReactorThread<T extends Session> extends ReactorEnvTh
     }
 
     /**
-     * 循环监听
+     * socket请求的入口: 循环监听。
+     * 此处的任务设计与redis有异曲同工之妙(基本原理一样)
      */
     public void run() {
         while (!this.isInterrupted()) {
@@ -207,7 +209,7 @@ public abstract class ProxyReactorThread<T extends Session> extends ReactorEnvTh
                         }
                         int readdyOps = key.readyOps();
                         setCurSession(null);
-                        // 如果当前收到连接请求
+                        // ==========>如果当前收到连接请求,注册channel，并绑定对应的selector的attachent
                         if ((readdyOps & SelectionKey.OP_ACCEPT) != 0) {
                             processAcceptKey(key);
                         }
@@ -215,9 +217,10 @@ public abstract class ProxyReactorThread<T extends Session> extends ReactorEnvTh
                         else if ((readdyOps & SelectionKey.OP_CONNECT) != 0) {
                             this.processConnectKey(key);
                         } else if ((readdyOps & SelectionKey.OP_READ) != 0) {
+                            // 处理读Key(通常的SQL命令均是此入口)
                             this.processReadKey(key);
-
                         } else if ((readdyOps & SelectionKey.OP_WRITE) != 0) {
+                            // 处理写
                             this.processWriteKey(key);
                         }
                     } catch (Exception e) {//如果设置为IOException方便调试,避免吞没其他类型异常
@@ -235,7 +238,7 @@ public abstract class ProxyReactorThread<T extends Session> extends ReactorEnvTh
                     }
                 }
                 keys.clear();
-                /////////epoll //////////
+                /////////epoll ：epoll空转导致cpu使用率高//////////
                 if (invalidSelectCount > 512) {
                     Selector newSelector = SelectorUtil.rebuildSelector(this.selector);
                     if (newSelector != null) {

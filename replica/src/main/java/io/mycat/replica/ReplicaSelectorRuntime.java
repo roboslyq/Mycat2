@@ -354,6 +354,7 @@ public enum ReplicaSelectorRuntime {
         if (balanceStrategy == null) {
             balanceStrategy = defaultWriteLoadBalanceStrategy;
         }
+        // 根据负载均衡策略选择对应的DataSource
         LoadBalanceElement select = balanceStrategy.select(selector, element);
         Objects.requireNonNull(select, "No data source available");
         return (PhysicsInstanceImpl) select;

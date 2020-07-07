@@ -75,6 +75,11 @@ public class DefaultCommandHandler extends AbstractCommandHandler {
         }
     }
 
+    /**
+     * 处理SQL
+     * @param bytes
+     * @param session
+     */
     @Override
     public void handleQuery(byte[] bytes, MycatSession session) {
         try {

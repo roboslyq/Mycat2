@@ -27,9 +27,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import static io.mycat.beans.mysql.packet.AuthPacket.calcLenencLength;
-
+/** 通用的指令处理器*/
 public class CommandResolver {
-
+    /**
+     *
+     * @param mycat   会话
+     * @param curPacket 请求数据包
+     * @param commandHandler    指令处理器ThreadModeCommandDispatcher
+     */
     public static void handle(MycatSession mycat, MySQLPacket curPacket,
                               CommandDispatcher commandHandler) {
         MycatMonitor.onCommandStart(mycat);
@@ -70,6 +75,7 @@ public class CommandResolver {
                     curPacket.readByte();
                     byte[] bytes = curPacket.readEOFStringBytes();
                     mycat.resetCurrentProxyPayload();
+                    // commandHandler = ThreadModeCommandDispatcher
                     commandHandler.handleQuery(bytes, mycat);
                     break;
                 }

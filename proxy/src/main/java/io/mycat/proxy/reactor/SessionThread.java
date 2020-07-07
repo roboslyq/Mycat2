@@ -17,7 +17,7 @@ package io.mycat.proxy.reactor;
 import io.mycat.proxy.session.Session;
 
 /**
- *
+ * 线程拥有可以获取session的能力
  * @author jamie12221 date 2019-05-10 13:21
  **/
 public interface SessionThread {

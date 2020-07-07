@@ -33,9 +33,15 @@ import java.util.Objects;
  */
 public final class MycatReactorThread extends ProxyReactorThread<MycatSession> {
   static final Logger LOGGER = LoggerFactory.getLogger(MycatReactorThread.class);
-
+  // 添加了前端会话管理器
   private final MySQLSessionManager mySQLSessionManager;
 
+  /**
+   *
+   * @param bufPool 缓冲池类型
+   * @param sessionManager 会话管理器
+   * @throws IOException
+   */
   public MycatReactorThread(BufferPool bufPool, FrontSessionManager<MycatSession> sessionManager)
       throws IOException {
     super(bufPool, sessionManager);

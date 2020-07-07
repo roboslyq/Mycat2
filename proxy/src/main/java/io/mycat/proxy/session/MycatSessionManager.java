@@ -81,20 +81,28 @@ public class MycatSessionManager implements FrontSessionManager<MycatSession> {
         }
     }
 
-
+    /**
+     * NIO channel注册
+     * @param keyAttachement
+     * @param bufPool
+     * @param nioSelector 对应Nio中的Selector
+     * @param frontChannel 对应SocketChannel
+     * @throws IOException
+     */
     @Override
     public void acceptNewSocketChannel(Object keyAttachement, BufferPool bufPool,
                                        Selector nioSelector, SocketChannel frontChannel) throws IOException {
+        // 此处对应NIOHandler
         MySQLClientAuthHandler mySQLClientAuthHandler = new MySQLClientAuthHandler(this);
+        // 创建一个session
         MycatSession mycat = new MycatSession(SessionManager.nextSessionId(), bufPool,
                 mySQLClientAuthHandler, this);
-
-
         //用于monitor监控获取session
         SessionThread thread = (SessionThread) Thread.currentThread();
         thread.setCurSession(mycat);
         mySQLClientAuthHandler.setMycatSession(mycat);
         try {
+            // 在mycatSession中完成Selector注册，并且设置attachment为mysession自己
             mycat.register(nioSelector, frontChannel, SelectionKey.OP_READ);
             MycatMonitor.onNewMycatSession(mycat);
             mySQLClientAuthHandler.sendAuthPackge();

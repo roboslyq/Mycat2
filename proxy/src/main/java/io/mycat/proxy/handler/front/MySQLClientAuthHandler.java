@@ -59,6 +59,10 @@ public class MySQLClientAuthHandler implements NIOHandler<MycatSession> {
     public boolean isChangeAuthPlugin = false;
     private MycatSessionManager mycatSessionManager;
 
+    /**
+     * 构造函数
+     * @param mycatSessionManager
+     */
     public MySQLClientAuthHandler(MycatSessionManager mycatSessionManager) {
         this.mycatSessionManager = mycatSessionManager;
     }
@@ -191,6 +195,10 @@ public class MySQLClientAuthHandler implements NIOHandler<MycatSession> {
         }
     }
 
+    /**
+     * 结束写更换 NioHandler为MycatHandler，本来NioHandler为当前MySQLClientAuthHandler
+     * @param mycat
+     */
     @Override
     public void onWriteFinished(MycatSession mycat) {
         if (!finished) {

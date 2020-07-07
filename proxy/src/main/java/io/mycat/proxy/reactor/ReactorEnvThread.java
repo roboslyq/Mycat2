@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- *
+ * 响应式编程(NIO)
  * @author jamie12221 date 2019-05-10 13:21
  **/
 public abstract class ReactorEnvThread extends Thread implements SessionThread {
@@ -53,6 +53,9 @@ public abstract class ReactorEnvThread extends Thread implements SessionThread {
   }
  public abstract void wakeup();
 
+  /**
+   * 处理任务入口
+   */
   protected void processNIOJob() {
     NIOJob nioJob = null;
     ReactorEnvThread reactor = this;

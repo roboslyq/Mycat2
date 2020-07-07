@@ -17,6 +17,7 @@ package io.mycat.proxy.handler;
 import io.mycat.proxy.session.Session;
 
 /**
+ * Session处理器（即NIO处理）
  * @author chen junwen
  */
 public interface NIOHandler<T extends Session> {

@@ -10,6 +10,7 @@ import java.util.Map;
  * 装饰者模式
  */
 public abstract class ThreadModeCommandDispatcher implements CommandDispatcher {
+    // 默认为DefaultCommandHandler
     final CommandDispatcher dispatcher;
 
     public ThreadModeCommandDispatcher(CommandDispatcher dispatcher) {

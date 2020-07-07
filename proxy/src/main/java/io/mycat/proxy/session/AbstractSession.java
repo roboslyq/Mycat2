@@ -54,9 +54,17 @@ public abstract class AbstractSession<T extends AbstractSession> implements Sess
         this.startTime = currentTimeMillis();
     }
 
+    /**
+     * 完成channel注册到selector中
+     * @param selector
+     * @param channel
+     * @param socketOpt
+     * @throws ClosedChannelException
+     */
     public void register(Selector selector, SocketChannel channel, int socketOpt)
             throws ClosedChannelException {
         this.channel = channel;
+        // 注册channel,同时设置attachment为this,即MycatSession
         this.channelKey = channel.register(selector, socketOpt, this);
     }
 

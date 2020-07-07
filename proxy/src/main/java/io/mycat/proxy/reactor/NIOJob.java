@@ -15,7 +15,7 @@
 package io.mycat.proxy.reactor;
 
 /**
- *
+ * 任务抽象
  * @author jamie12221 date 2019-05-10 13:21
  **/
 public interface NIOJob {
