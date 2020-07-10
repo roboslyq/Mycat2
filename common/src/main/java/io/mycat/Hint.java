@@ -7,6 +7,7 @@ import java.util.Map;
  * 2、在mycat里,是用来修改sql的,对sql进行相关优化
  * 3、Hint是Mycat平台提供给用户修改sql的一次机会，用户可以根据自己的情况对SQL进行优化修改。
  *    详情见：UserSpace#execute(int sessionId, MycatDataContext dataContext, CharBuffer charBuffer, Map<String, Object> context, Response response)
+ * 4、mycat的分布式查询引擎是可以加hint的,但现在还是只是实验
  */
 public interface Hint {
     String getName();

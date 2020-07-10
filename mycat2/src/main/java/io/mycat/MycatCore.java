@@ -347,7 +347,7 @@ public enum MycatCore {
     }
 
     /**
-     * 启动类
+     * ======>启动类
      * @param args
      * @throws Exception
      */

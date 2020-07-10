@@ -20,8 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * 构建配置的辅助类
+ * ConfigProvider bootConfig = RootHelper.INSTANCE.bootConfig(MycatCore.class);
+ */
 public enum RootHelper {
-    INSTANCE;
+     INSTANCE;
      volatile ConfigProvider configProvider;
 
     @SneakyThrows
@@ -32,13 +36,21 @@ public enum RootHelper {
         return configProvider;
     }
 
+    /**
+     * 构建配置
+     * @param rootClass
+     * @return
+     * @throws Exception
+     */
     public synchronized ConfigProvider bootConfig(Class rootClass) throws Exception {
+        //配置provider，如果没有配置则默认为FileConfigProvider.class,还有一个是HttpConfigProvider
         String configProviderKeyName = "MYCAT_CONFIG_PROVIER";
         String className = System.getProperty(configProviderKeyName);
 
         if (className == null) {
             className = FileConfigProvider.class.getName();
         }
+        // Mycat的有目录，对应配置文件所在位置
         String configResourceKeyName = "MYCAT_HOME";
         String path = System.getProperty(configResourceKeyName);
         System.out.println("path:" + path);
@@ -49,7 +61,9 @@ public enum RootHelper {
         tmpConfigProvider = (ConfigProvider) clazz.getDeclaredConstructor().newInstance();
         HashMap<String, String> config = new HashMap<>();
         config.put("path", path);
+        // 获取JVM配置相关
         config.putAll((Map)System.getProperties());
+        // 初始化配置
         tmpConfigProvider.init(rootClass, config);
         return configProvider = tmpConfigProvider;
     }

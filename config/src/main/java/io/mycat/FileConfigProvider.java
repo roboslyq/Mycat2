@@ -45,11 +45,12 @@ public class FileConfigProvider implements ConfigProvider {
     final AtomicInteger count = new AtomicInteger();
     static final Logger logger = LoggerFactory.getLogger(FileConfigProvider.class);
     private HashMap<String, Object> globalVariables;
-
+    /** 启动时配置初始化 */
     @Override
     public void init(Class rootClass, Map<String, String> config) throws Exception {
         String path = getConfigPath(rootClass, config);
         this.defaultPath = path;
+        // ===>解析配置文件
         fetchConfig(this.defaultPath);
 
         Path resolve = Paths.get(path).getParent().resolve("globalVariables.json");
@@ -101,7 +102,7 @@ public class FileConfigProvider implements ConfigProvider {
      * 根据初始化信息生成配置
      * @param rootClass
      * @param config
-     * @return
+     * @return 配置文件的绝对路径
      * @throws URISyntaxException
      */
     private String getConfigPath(Class rootClass, Map<String, String> config) throws URISyntaxException {
@@ -177,6 +178,7 @@ public class FileConfigProvider implements ConfigProvider {
         }
         sqlGroups.append(full);
         System.out.println(sqlGroups);
+        // 问题YamlUtil工具加载yaml配置
         return YamlUtil.loadText(sqlGroups.toString(), MycatConfig.class);
     }
 

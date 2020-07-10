@@ -30,7 +30,7 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 /**
- * Desc: yml文件的工具类
+ * Desc: yml文件的工具类，底层使用snakeyaml来实现
  *
  * date: 09/09/2017
  *
