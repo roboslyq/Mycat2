@@ -23,6 +23,11 @@ public interface Response {
 
     void evalSimpleSql(SQLStatement evalSimpleSql);
 
+    /**
+     * 指定targetName,不需要自动路由。在booster中使用
+     * @param defaultTargetName
+     * @param statement
+     */
     default void proxySelect(String defaultTargetName, SQLSelectStatement statement) {
         proxySelect(defaultTargetName, statement.toString());
     }

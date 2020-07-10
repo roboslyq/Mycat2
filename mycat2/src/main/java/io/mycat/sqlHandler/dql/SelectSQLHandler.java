@@ -138,7 +138,9 @@ public class SelectSQLHandler extends AbstractSQLHandler<SQLSelectStatement> {
         }
 
         ///////////////////////////////booster//////////////////////////////
+        // 加速器，当查询不在事务中并且不是自动提交
         if (!dataContext.isInTransaction() && dataContext.isAutocommit()) {
+            // 根据用户名称，获取booster标识
             Optional<String> booster = BoosterRuntime.INSTANCE.getBooster(dataContext.getUser().getUserName());
             if (booster.isPresent()) {
                 receiver.proxySelect(booster.get(), statement);

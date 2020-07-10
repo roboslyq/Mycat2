@@ -54,10 +54,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PhysicalDBPool {
 	
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PhysicalDBPool.class);
-	
+	//不开启读写分离机制，所有读操作都发送到当前可用的 writeHost 上
 	public static final int BALANCE_NONE = 0;
+	// 全部的 readHost 与 stand by writeHost 参与 select 语句的负载均衡，简单的说，当双主双从
+	// 模式(M1->S1， M2->S2，并且 M1 与 M2 互为主备)，正常情况下， M2,S1,S2 都参与 select 语句的负载均衡
 	public static final int BALANCE_ALL_BACK = 1;
+	// 所有读操作都随机的在 writeHost、 readhost 上分发。
 	public static final int BALANCE_ALL = 2;
+	// 所有读请求随机的分发到 readhost 执行， writerHost 不负担读压力
     public static final int BALANCE_ALL_READ = 3;
 
 	public static final int RANDOM = 0;

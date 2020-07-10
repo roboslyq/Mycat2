@@ -87,6 +87,7 @@ public class UserSpace {
             final List<String> hints = (List<String>) context.getOrDefault("hints", Collections.emptyList());
             final boolean explainCommand = "true".equalsIgnoreCase(Objects.toString(context.getOrDefault("doExplain", "")));
             //////////////////////////////////hints/////////////////////////////////
+            // 预留给用户的扩展，让用户自定义修改对应的SQl
             String text = null;
             if (!hints.isEmpty()) {
                 text = charBuffer.toString();

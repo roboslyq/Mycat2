@@ -93,6 +93,7 @@ public enum MycatCore {
         ReplicaSelectorRuntime.INSTANCE.load(mycatConfig);
         // JDBC相关工作线程池
         JdbcRuntime.INSTANCE.load(mycatConfig);
+        // 加速计算的节点
         BoosterRuntime.INSTANCE.load(mycatConfig);
         // 指令运行时拦截器
         InterceptorRuntime.INSTANCE.load(mycatConfig);
